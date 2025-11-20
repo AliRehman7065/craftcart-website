@@ -38,7 +38,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    plugins: ['~/server/plugins/mongoose'],
+    plugins: ['./server/plugins/mongoose.ts'],
   },
 
   app: {
