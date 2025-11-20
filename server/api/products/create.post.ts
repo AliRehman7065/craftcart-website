@@ -1,4 +1,4 @@
-import { Product } from '~/server/models/Product'
+import { Product } from '../../models/Product'
 
 export default defineEventHandler(async (event) => {
   try {
