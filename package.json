@@ -1,0 +1,28 @@
+{
+  "name": "craftcart-temp",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/icon": "^2.1.0",
+    "@nuxt/ui": "^4.2.0",
+    "@pinia/nuxt": "^0.11.3",
+    "bcryptjs": "^3.0.3",
+    "firebase": "^12.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.20.0",
+    "nuxt": "^4.2.1",
+    "vue": "^3.5.24",
+    "vue-router": "^4.6.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10"
+  }
+}
