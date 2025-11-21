@@ -1,7 +1,13 @@
 import mongoose from 'mongoose'
+import 'dotenv/config'
 
 // MongoDB connection
-const MONGODB_URI = 'mongodb+srv://alirehman70612_db_user:RO1suNXa1mvTYnUN@cluster0.m8gmkq6.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0'
+const MONGODB_URI = process.env.MONGODB_URI
+
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI is not defined in environment variables')
+  process.exit(1)
+}
 
 // User Schema
 const userSchema = new mongoose.Schema({

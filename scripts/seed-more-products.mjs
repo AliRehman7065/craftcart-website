@@ -1,7 +1,12 @@
 import mongoose from 'mongoose'
 import 'dotenv/config'
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://alirehman70612_db_user:RO1suNXa1mvTYnUN@cluster0.m8gmkq6.mongodb.net/test'
+const MONGODB_URI = process.env.MONGODB_URI
+
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI is not defined in environment variables')
+  process.exit(1)
+}
 
 // Seller ID
 const SELLER_ID = '691facda62456ca33ce76d00'
