@@ -2,6 +2,16 @@ import { Product } from '../../models/Product'
 
 export default defineEventHandler(async (event) => {
   try {
+    // Check database connection
+    const mongoose = await import('mongoose')
+    if (mongoose.default.connection.readyState !== 1) {
+      console.error('Database not connected. State:', mongoose.default.connection.readyState)
+      throw createError({
+        statusCode: 503,
+        message: 'Database connection not available',
+      })
+    }
+
     const query = getQuery(event)
     const {
       category,
@@ -109,9 +119,15 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error: any) {
     console.error('Fetch products error:', error)
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    })
+    
     throw createError({
       statusCode: 500,
-      message: 'Failed to fetch products',
+      message: `Failed to fetch products: ${error.message}`,
     })
   }
 })

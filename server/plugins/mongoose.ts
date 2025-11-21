@@ -5,10 +5,14 @@ export default defineNitroPlugin(async () => {
   
   // Skip if no MongoDB URI configured
   if (!config.mongodbUri || config.mongodbUri === '') {
-    console.log('⚠️  MongoDB URI not configured. Database features will not work.')
-    console.log('💡 Please set MONGODB_URI in your .env file')
+    console.error('❌ MONGODB_URI environment variable is not set!')
+    console.log('💡 Please set MONGODB_URI in your environment variables')
+    console.log('💡 For Vercel: Add it in Project Settings → Environment Variables')
     return
   }
+
+  console.log('🔄 Attempting to connect to MongoDB...')
+  console.log('📍 Environment:', process.env.NODE_ENV || 'development')
 
   try {
     // Check if already connected
@@ -19,25 +23,32 @@ export default defineNitroPlugin(async () => {
 
     // Connection options
     const options = {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000, // Increased for Vercel
       socketTimeoutMS: 45000,
+      maxPoolSize: 10,
     }
 
     await mongoose.connect(config.mongodbUri, options)
     
     console.log('✅ MongoDB connected successfully')
     console.log(`📊 Database: ${mongoose.connection.name}`)
+    console.log(`🔗 Connection state: ${mongoose.connection.readyState}`)
     
-  } catch (error) {
-    console.error('❌ MongoDB connection error:', error)
-    console.log('💡 Make sure your MongoDB connection string is correct in .env')
-    console.log('💡 For MongoDB Atlas: mongodb+srv://username:password@cluster.mongodb.net/craftcart')
-    console.log('💡 For local MongoDB: mongodb://localhost:27017/craftcart')
+  } catch (error: any) {
+    console.error('❌ MongoDB connection error:', error.message)
+    console.error('📋 Error details:', {
+      name: error.name,
+      code: error.code,
+      codeName: error.codeName,
+    })
+    console.log('💡 Make sure your MongoDB connection string is correct')
+    console.log('💡 For MongoDB Atlas: Ensure IP whitelist includes 0.0.0.0/0')
+    console.log('💡 For Vercel deployment: Check environment variables are set')
     
-    // Don't exit process in development
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1)
-    }
+    // Don't exit process - let it fail gracefully
+    // if (process.env.NODE_ENV === 'production') {
+    //   process.exit(1)
+    // }
   }
 
   // Handle connection events
