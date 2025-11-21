@@ -4,9 +4,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   
   modules: [
-    '@nuxt/ui',
     '@pinia/nuxt',
-    '@nuxt/icon',
+    '@nuxtjs/tailwindcss',
   ],
 
   runtimeConfig: {
@@ -35,10 +34,6 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
     typeCheck: false,
-  },
-
-  nitro: {
-    plugins: ['./server/plugins/mongoose.ts'],
   },
 
   app: {

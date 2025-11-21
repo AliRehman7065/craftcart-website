@@ -48,26 +48,52 @@ export default defineEventHandler(async (event) => {
 
     const total = await Product.countDocuments(filter)
 
+    // Manually populate seller field if it exists (for old data)
+    const User = (await import('../../models/User')).User
+    const productsWithSeller = await Promise.all(
+      products.map(async (product: any) => {
+        let sellerData = product.sellerId
+        
+        // If no sellerId but has seller field (ObjectId), fetch it
+        if (!sellerData && product.seller) {
+          sellerData = await User.findById(product.seller).select('name rating location').lean()
+        }
+        
+        return {
+          ...product,
+          sellerData
+        }
+      })
+    )
+
     // Transform data for frontend
-    const transformedProducts = products.map((product: any) => ({
-      id: product._id.toString(),
-      sellerId: product.sellerId._id.toString(),
-      seller: {
-        name: product.sellerId.name,
-        rating: product.sellerId.rating,
-      },
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      category: product.category,
-      images: product.images,
-      stock: product.stock,
-      location: product.location,
-      rating: product.rating,
-      isActive: product.isActive,
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
-    }))
+    const transformedProducts = productsWithSeller.map((product: any) => {
+      const sellerData = product.sellerData
+      
+      return {
+        _id: product._id.toString(),
+        seller: sellerData ? {
+          _id: sellerData._id?.toString() || sellerData.toString(),
+          name: sellerData.name || 'Unknown',
+          rating: sellerData.rating || { average: 0, count: 0 },
+        } : {
+          _id: '',
+          name: 'Unknown',
+          rating: { average: 0, count: 0 },
+        },
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        category: product.category,
+        images: product.images,
+        stock: product.stock,
+        location: product.location,
+        rating: product.rating,
+        isActive: product.isActive,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+      }
+    })
 
     return {
       success: true,

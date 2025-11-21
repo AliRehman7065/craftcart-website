@@ -22,6 +22,19 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Check for duplicate product (same title by same seller)
+    const existingProduct = await Product.findOne({
+      sellerId: user.userId,
+      title: { $regex: new RegExp(`^${title.trim()}$`, 'i') }
+    })
+
+    if (existingProduct) {
+      throw createError({
+        statusCode: 409,
+        message: 'You already have a product with this title. Please use a different title or update the existing product.',
+      })
+    }
+
     // Create product
     const product = await Product.create({
       sellerId: user.userId,

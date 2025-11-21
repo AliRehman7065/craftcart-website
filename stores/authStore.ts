@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import type { User, UserLogin, UserRegistration } from '~/types/user'
+import type { ApiResponse } from '~/types/api'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref<User | null>(null)
-  const loading = ref(false)
+  const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
 
   // Getters
@@ -13,12 +14,12 @@ export const useAuthStore = defineStore('auth', () => {
   const isCustomer = computed(() => user.value?.userType === 'customer')
 
   // Actions
-  const login = async (credentials: UserLogin) => {
+  const login = async (credentials: UserLogin): Promise<boolean> => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await $fetch('/api/auth/login', {
+      const response = await $fetch<ApiResponse<{ user: User; token: string }>>('/api/auth/login', {
         method: 'POST',
         body: credentials,
       })
@@ -37,12 +38,12 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const register = async (userData: UserRegistration) => {
+  const register = async (userData: UserRegistration): Promise<boolean> => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await $fetch('/api/auth/register', {
+      const response = await $fetch<ApiResponse<{ user: User; token: string }>>('/api/auth/register', {
         method: 'POST',
         body: userData,
       })
@@ -61,17 +62,17 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     loading.value = true
     error.value = null
 
     try {
-      await $fetch('/api/auth/logout', {
+      await $fetch<ApiResponse<null>>('/api/auth/logout', {
         method: 'POST',
       })
 
       user.value = null
-      navigateTo('/auth/login')
+      await navigateTo('/auth/login')
     } catch (e: any) {
       error.value = 'Logout failed'
       console.error('Logout error:', e)
@@ -80,15 +81,18 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const checkAuth = async () => {
+  const checkAuth = async (): Promise<boolean> => {
     try {
-      const response = await $fetch('/api/auth/me')
+      const response = await $fetch<ApiResponse<{ user: User }>>('/api/auth/me', {
+        credentials: 'include'
+      })
       if (response.success && response.data) {
-        // Fetch full user data if needed
+        user.value = response.data.user
         return true
       }
       return false
     } catch (e) {
+      console.log('Auth check failed:', e)
       user.value = null
       return false
     }

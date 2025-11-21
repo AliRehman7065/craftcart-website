@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { FormSubmitEvent } from '#ui/types'
 import type { UserLogin } from '~/types/user'
 
 definePageMeta({
@@ -17,19 +16,17 @@ const state = reactive<UserLogin>({
 const loading = ref(false)
 const errorMessage = ref('')
 
-const validate = (state: UserLogin) => {
-  const errors = []
-  if (!state.email) errors.push({ path: 'email', message: 'Email is required' })
-  if (!state.password) errors.push({ path: 'password', message: 'Password is required' })
-  return errors
-}
+const onSubmit = async () => {
+  if (!state.email || !state.password) {
+    errorMessage.value = 'Please fill in all fields'
+    return
+  }
 
-const onSubmit = async (event: FormSubmitEvent<UserLogin>) => {
   loading.value = true
   errorMessage.value = ''
 
   try {
-    await authStore.login(event.data)
+    await authStore.login(state)
     
     // Redirect based on user type
     if (authStore.isSeller) {
@@ -46,69 +43,78 @@ const onSubmit = async (event: FormSubmitEvent<UserLogin>) => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 dark:from-gray-900 dark:to-gray-800 px-4 py-12">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 px-4 py-12">
     <div class="max-w-md w-full">
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">CraftCart</h1>
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Welcome Back</h2>
-        <p class="text-gray-600 dark:text-gray-400">Sign in to your account</p>
+      <!-- Back to Home Button -->
+      <div class="mb-6">
+        <AppButton
+          variant="ghost"
+          to="/"
+          class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+        >
+          ← Back to Home
+        </AppButton>
       </div>
 
-      <UCard>
-        <UForm :validate="validate" :state="state" @submit="onSubmit" class="space-y-4">
-          <UAlert
-            v-if="errorMessage"
-            color="red"
-            variant="soft"
-            :title="errorMessage"
-            :close-button="{ icon: 'i-heroicons-x-mark-20-solid' }"
-            @close="errorMessage = ''"
-          />
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent mb-2">CraftCart</h1>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Welcome Back</h2>
+        <p class="text-gray-600 dark:text-gray-400">Sign in to your account to continue</p>
+      </div>
 
-          <UFormGroup label="Email" name="email" required>
-            <UInput
-              v-model="state.email"
-              type="email"
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <form @submit.prevent="onSubmit" class="space-y-6">
+          <!-- Error Message -->
+          <div v-if="errorMessage" class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg text-sm">
+            {{ errorMessage }}
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+            <input 
+              id="email"
+              v-model="state.email" 
+              type="email" 
+              required
               placeholder="your.email@example.com"
-              size="lg"
-              icon="i-heroicons-envelope"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             />
-          </UFormGroup>
+          </div>
 
-          <UFormGroup label="Password" name="password" required>
-            <UInput
-              v-model="state.password"
-              type="password"
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+            <input 
+              id="password"
+              v-model="state.password" 
+              type="password" 
+              required
               placeholder="Enter your password"
-              size="lg"
-              icon="i-heroicons-lock-closed"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             />
-          </UFormGroup>
+          </div>
 
-          <UButton
-            type="submit"
+          <!-- Submit Button -->
+          <AppButton 
+            type="submit" 
             color="primary"
             size="lg"
-            block
-            :loading="loading"
+            :disabled="loading"
+            class="w-full"
           >
-            Sign In
-          </UButton>
-        </UForm>
+            {{ loading ? 'Signing In...' : 'Sign In' }}
+          </AppButton>
 
-        <div class="mt-6 text-center">
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            Don't have an account?
-            <NuxtLink to="/auth/register" class="text-primary-600 hover:text-primary-500 font-medium">
+          <!-- Sign Up Link -->
+          <div class="text-center text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account? 
+            <NuxtLink to="/auth/register" class="text-orange-600 hover:text-orange-700 font-medium">
               Sign up
             </NuxtLink>
-          </p>
-        </div>
-      </UCard>
-
-      <p class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        By continuing, you agree to CraftCart's Terms of Service and Privacy Policy
-      </p>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>

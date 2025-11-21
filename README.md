@@ -9,23 +9,70 @@
 
 ## 🌟 Features
 
-### Current MVP (Phase 1)
-- ✅ **Dual Account System**: Separate interfaces for Sellers and Customers
-- ✅ **Authentication**: JWT-based secure authentication with bcrypt password hashing
-- ✅ **Product Management**: CRUD operations for artisan products
-- ✅ **Product Discovery**: Browse, search, and filter products by category, price
-- ✅ **Responsive Design**: Mobile-first UI with Nuxt UI components
-- ✅ **Modern Stack**: Built with latest Nuxt 4, Vue 3, TypeScript
+### ✅ Completed Features
 
-### Coming Soon (Phase 2-4)
-- 🔄 Real-time Chat with Firebase
-- 🔄 Order Management & Tracking
+#### Authentication & User Management
+- ✅ **Dual Account System**: Separate seller and customer roles
+- ✅ **JWT Authentication**: Secure httpOnly cookie-based auth
+- ✅ **Password Security**: bcrypt hashing with salt rounds
+- ✅ **Auth Persistence**: Automatic session management across page reloads
+- ✅ **Protected Routes**: Middleware-based route protection
+
+#### Product Management
+- ✅ **Full CRUD Operations**: Create, Read, Update, Delete products
+- ✅ **8 Product Categories**: Handicrafts, Textiles, Pottery, Jewelry, Home Decor, Paintings, Woodwork, Metalwork
+- ✅ **Multi-Image Support**: 2-3 images per product
+- ✅ **Stock Management**: Real-time inventory tracking
+- ✅ **Product Filtering**: Category, price range, search functionality
+- ✅ **Duplicate Prevention**: Automatic detection and prevention of duplicate products per seller
+- ✅ **58 Seeded Products**: Pre-populated catalog for testing
+
+#### Shopping Experience
+- ✅ **Shopping Cart**: Add/remove products, quantity management
+- ✅ **Checkout System**: Full checkout flow with delivery address
+- ✅ **Product Discovery**: Browse by category with visual cards
+- ✅ **Search & Filter**: Advanced product filtering
+- ✅ **Responsive Design**: Mobile-first UI with Tailwind CSS
+
+#### Order Management
+- ✅ **Order Creation**: Automated order number generation (ORD-timestamp-random)
+- ✅ **Order Tracking**: Customer order history with status timeline
+- ✅ **Seller Dashboard**: Real-time order management and analytics
+- ✅ **Order Status Flow**: pending → confirmed → shipped → delivered (+ cancelled)
+- ✅ **Stock Restoration**: Automatic stock restoration on order cancellation
+- ✅ **Order Statistics**: Total orders, revenue, status breakdown
+
+#### Seller Features
+- ✅ **Seller Dashboard**: Comprehensive analytics and insights
+- ✅ **Product Management**: Add, edit, delete products
+- ✅ **Order Management**: View, confirm, update order status
+- ✅ **Analytics**: Top selling products, recent orders, completion rate
+- ✅ **Revenue Tracking**: Real-time revenue calculation (excluding cancelled orders)
+- ✅ **Help Center**: Complete seller documentation and guides
+
+#### Pages & Documentation
+- ✅ **Home Page**: Dynamic product display with categories
+- ✅ **About Page**: Mission, story, and values
+- ✅ **Contact Page**: Contact form and information
+- ✅ **FAQ Page**: Searchable knowledge base with categories
+- ✅ **Terms & Conditions**: Complete legal documentation
+- ✅ **Privacy Policy**: Comprehensive privacy information
+- ✅ **Seller Help**: Detailed seller onboarding and guides
+
+#### Technical Features
+- ✅ **Toast Notifications**: User feedback for all actions
+- ✅ **Error Handling**: Comprehensive error management
+- ✅ **Loading States**: Smooth loading experiences
+- ✅ **Data Validation**: Client and server-side validation
+- ✅ **Database Scripts**: Utilities for seeding, cleanup, and maintenance
+
+### 🔄 Coming Soon (Phase 2)
 - 🔄 Payment Integration (Razorpay)
 - 🔄 Rating & Review System
-- 🔄 Delivery Partner Assignment
-- 🔄 Advanced Search & Filters
-- 🔄 Seller Analytics Dashboard
-- 🔄 Image Upload with Firebase Storage
+- 🔄 Real-time Chat between buyers and sellers
+- 🔄 Email Notifications
+- 🔄 Image Upload with Cloud Storage
+- 🔄 Advanced Analytics Dashboard
 
 ## 🚀 Tech Stack
 
@@ -112,39 +159,80 @@ Visit `http://localhost:3000` 🎉
 
 ```
 craftcart-website/
-├── app/
-│   └── app.vue                 # Root component
+├── app.vue                     # Root component
 ├── pages/
-│   ├── index.vue              # Homepage
-│   ├── auth/
-│   │   ├── login.vue          # Login page
-│   │   └── register.vue       # Registration page
-│   └── products/              # Product pages (coming soon)
-├── components/                # Reusable Vue components (coming soon)
+│   ├── index.vue              # Dynamic homepage with categories
+│   ├── about.vue              # About page
+│   ├── contact.vue            # Contact form page
+│   ├── faq.vue                # FAQ with search
+│   ├── terms.vue              # Terms & conditions
+│   ├── privacy.vue            # Privacy policy
+│   ├── products/
+│   │   ├── index.vue          # Product listing with filters
+│   │   └── [id].vue           # Product detail page
+│   ├── cart.vue               # Shopping cart
+│   ├── checkout.vue           # Checkout page
+│   ├── order-success/[id].vue # Order confirmation
+│   ├── customer/
+│   │   └── orders.vue         # Customer order tracking
+│   └── seller/
+│       ├── dashboard.vue      # Seller analytics dashboard
+│       ├── products.vue       # Seller product management
+│       ├── orders.vue         # Seller order management
+│       └── help.vue           # Seller help center
+├── components/
+│   ├── AppButton.vue          # Reusable button
+│   ├── AppCard.vue            # Card component
+│   ├── ProductCard.vue        # Product display card
+│   ├── Header.vue             # Navigation header
+│   └── Toast.vue              # Toast notifications
 ├── layouts/
-│   ├── default.vue            # Main layout with header/footer
-│   └── auth.vue               # Auth page layout
+│   └── default.vue            # Main layout with header/footer
+├── middleware/
+│   └── auth.ts                # Route protection middleware
 ├── server/
 │   ├── api/
 │   │   ├── auth/              # Authentication endpoints
-│   │   └── products/          # Product CRUD endpoints
-│   ├── middleware/
-│   │   └── auth.ts            # JWT verification middleware
+│   │   │   ├── register.post.ts
+│   │   │   ├── login.post.ts
+│   │   │   ├── logout.post.ts
+│   │   │   └── me.get.ts
+│   │   ├── products/          # Product CRUD endpoints
+│   │   │   ├── index.get.ts   # List products with filters
+│   │   │   ├── create.post.ts # Create product (with duplicate check)
+│   │   │   ├── [id].get.ts    # Get single product
+│   │   │   ├── [id].put.ts    # Update product
+│   │   │   ├── [id].delete.ts # Delete product
+│   │   │   └── seller/
+│   │   │       └── my-products.get.ts
+│   │   ├── orders/            # Order management
+│   │   │   ├── create.post.ts # Create order
+│   │   │   ├── my-orders.get.ts # Customer orders
+│   │   │   ├── [id]/status.patch.ts # Update order status
+│   │   │   └── seller/
+│   │   │       └── my-orders.get.ts
+│   │   └── cart/              # Cart operations
 │   ├── models/
-│   │   ├── User.ts            # User MongoDB schema
-│   │   ├── Product.ts         # Product MongoDB schema
-│   │   └── Order.ts           # Order MongoDB schema
+│   │   ├── User.ts            # User schema with password hashing
+│   │   ├── Product.ts         # Product schema
+│   │   └── Order.ts           # Order schema with status workflow
+│   ├── middleware/
+│   │   └── auth.ts            # JWT verification
 │   └── plugins/
 │       └── mongoose.ts        # MongoDB connection
 ├── stores/
-│   └── authStore.ts           # Pinia auth store
-├── types/
-│   ├── user.ts                # User type definitions
-│   ├── product.ts             # Product type definitions
-│   ├── order.ts               # Order type definitions
-│   └── api.ts                 # API response types
+│   ├── authStore.ts           # Auth state management
+│   ├── productStore.ts        # Product state
+│   ├── cartStore.ts           # Cart management
+│   └── toastStore.ts          # Toast notifications
+├── plugins/
+│   └── auth.client.ts         # Auth persistence plugin
+├── scripts/
+│   ├── seed-more-products.mjs # Seed 58 products
+│   ├── remove-duplicates.mjs  # Clean duplicate products
+│   └── fix-categories.mjs     # Fix category names
 ├── nuxt.config.ts             # Nuxt configuration
-├── app.config.ts              # Nuxt UI theme config
+├── tailwind.config.ts         # Tailwind CSS config
 └── package.json               # Dependencies
 ```
 
@@ -186,48 +274,93 @@ npm run typecheck    # Type check TypeScript
 
 ### Authentication
 ```
-POST /api/auth/register    # Register new user
-POST /api/auth/login       # Login user
-POST /api/auth/logout      # Logout user
-GET  /api/auth/me          # Get current user
+POST /api/auth/register         # Register new user (customer/seller)
+POST /api/auth/login            # Login with email & password
+POST /api/auth/logout           # Clear auth session
+GET  /api/auth/me               # Get authenticated user info
 ```
 
 ### Products
 ```
-GET  /api/products              # List products (with filters)
-GET  /api/products/:id          # Get single product
-POST /api/products/create       # Create product (sellers only)
+GET    /api/products                    # List all products (with filters)
+       Query params: category, minPrice, maxPrice, search, sortBy, page, limit
+GET    /api/products/[id]               # Get single product details
+POST   /api/products/create             # Create product (sellers only)
+       - Checks for duplicate titles per seller
+PUT    /api/products/[id]               # Update product (owner only)
+       - Prevents duplicate title changes
+DELETE /api/products/[id]               # Delete product (owner only)
+GET    /api/products/seller/my-products # Get seller's products
+```
+
+### Orders
+```
+POST  /api/orders/create              # Create new order
+      - Generates unique order number
+      - Reduces product stock
+GET   /api/orders/my-orders            # Get customer's orders
+GET   /api/orders/seller/my-orders    # Get seller's orders
+PATCH /api/orders/[id]/status         # Update order status
+      - Restores stock on cancellation
+```
+
+### Cart
+```
+GET    /api/cart         # Get cart items (stored in localStorage client-side)
+POST   /api/cart/add     # Add to cart
+DELETE /api/cart/remove  # Remove from cart
 ```
 
 ## 🎯 Roadmap
 
-### Phase 1: MVP Foundation ✅ (Completed)
+### Phase 1: MVP Foundation ✅ (COMPLETED)
 - [x] Project setup with Nuxt 4
-- [x] Authentication system
+- [x] Authentication system with JWT
 - [x] Product CRUD APIs
-- [x] Basic UI (Homepage, Auth pages)
-- [x] Database models
+- [x] User models (Customer & Seller)
+- [x] Database setup with MongoDB Atlas
 
-### Phase 2: Core Features (Week 3-4)
-- [ ] Product listing page with filters
-- [ ] Product detail page
-- [ ] Seller product upload form
-- [ ] Order creation API
-- [ ] Customer dashboard
+### Phase 2: Core Features ✅ (COMPLETED)
+- [x] Product listing page with filters
+- [x] Product detail page
+- [x] Shopping cart functionality
+- [x] Checkout system
+- [x] Order creation API
+- [x] Customer dashboard with order tracking
+- [x] Order management system
+- [x] Seller product management
+- [x] Stock management with auto-restore
 
-### Phase 3: Transactions & Chat (Week 5-6)
-- [ ] Firebase real-time chat
-- [ ] Razorpay payment integration
-- [ ] Order tracking
-- [ ] Rating system
+### Phase 3: Advanced Features ✅ (COMPLETED)
+- [x] Seller dashboard with real-time analytics
+- [x] Top selling products tracking
+- [x] Revenue and order statistics
+- [x] Order status workflow (5 states)
+- [x] Home page with dynamic content
+- [x] 8 product categories with images
+- [x] 58 seeded products across categories
+- [x] Duplicate product prevention
+- [x] About, Contact, FAQ pages
+- [x] Terms, Privacy, Help Center pages
 
-### Phase 4: Polish & Launch (Week 7-8)
-- [ ] Seller dashboard with analytics
-- [ ] Image upload to Firebase Storage
+### Phase 4: Enhancements 🔄 (IN PROGRESS)
+- [x] Comprehensive documentation
+- [x] Database maintenance scripts
+- [ ] Payment integration (Razorpay)
 - [ ] Email notifications
+- [ ] Rating & review system
+- [ ] Real-time chat system
+- [ ] Image upload functionality
 - [ ] Performance optimization
-- [ ] Security hardening
-- [ ] Deployment to Vercel
+- [ ] SEO optimization
+
+### Phase 5: Launch 🚀 (UPCOMING)
+- [ ] Security audit
+- [ ] Load testing
+- [ ] Production deployment to Vercel
+- [ ] Domain setup
+- [ ] Monitoring & analytics
+- [ ] User feedback collection
 
 ## 🚢 Deployment
 

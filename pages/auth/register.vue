@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { FormSubmitEvent } from '#ui/types'
 import type { UserRegistration } from '~/types/user'
 
 definePageMeta({
@@ -21,29 +20,33 @@ const loading = ref(false)
 const errorMessage = ref('')
 const confirmPassword = ref('')
 
-const userTypeOptions = [
-  { value: 'customer', label: 'Customer', description: 'I want to buy artisan products' },
-  { value: 'seller', label: 'Artisan/Seller', description: 'I want to sell my handicrafts' },
-]
+const onSubmit = async () => {
+  // Validation
+  if (!state.name || !state.email || !state.phone || !state.password) {
+    errorMessage.value = 'Please fill in all fields'
+    return
+  }
+  
+  if (!/^\d{10}$/.test(state.phone)) {
+    errorMessage.value = 'Phone must be 10 digits'
+    return
+  }
+  
+  if (state.password.length < 6) {
+    errorMessage.value = 'Password must be at least 6 characters'
+    return
+  }
+  
+  if (state.password !== confirmPassword.value) {
+    errorMessage.value = 'Passwords do not match'
+    return
+  }
 
-const validate = (state: UserRegistration) => {
-  const errors = []
-  if (!state.name) errors.push({ path: 'name', message: 'Name is required' })
-  if (!state.email) errors.push({ path: 'email', message: 'Email is required' })
-  if (!state.phone) errors.push({ path: 'phone', message: 'Phone is required' })
-  else if (!/^\d{10}$/.test(state.phone)) errors.push({ path: 'phone', message: 'Phone must be 10 digits' })
-  if (!state.password) errors.push({ path: 'password', message: 'Password is required' })
-  else if (state.password.length < 6) errors.push({ path: 'password', message: 'Password must be at least 6 characters' })
-  if (state.password !== confirmPassword.value) errors.push({ path: 'confirmPassword', message: 'Passwords do not match' })
-  return errors
-}
-
-const onSubmit = async (event: FormSubmitEvent<UserRegistration>) => {
   loading.value = true
   errorMessage.value = ''
 
   try {
-    await authStore.register(event.data)
+    await authStore.register(state)
     
     // Redirect based on user type
     if (authStore.isSeller) {
@@ -60,129 +63,146 @@ const onSubmit = async (event: FormSubmitEvent<UserRegistration>) => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 dark:from-gray-900 dark:to-gray-800 px-4 py-12">
-    <div class="max-w-2xl w-full">
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">CraftCart</h1>
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Create Your Account</h2>
-        <p class="text-gray-600 dark:text-gray-400">Join our community of artisans and craft enthusiasts</p>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 px-4 py-12">
+    <div class="max-w-md w-full">
+      <!-- Back to Home Button -->
+      <div class="mb-6">
+        <AppButton
+          variant="ghost"
+          to="/"
+          class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+        >
+          ← Back to Home
+        </AppButton>
       </div>
 
-      <UCard>
-        <UForm :validate="validate" :state="state" @submit="onSubmit" class="space-y-4">
-          <UAlert
-            v-if="errorMessage"
-            color="red"
-            variant="soft"
-            :title="errorMessage"
-            :close-button="{ icon: 'i-heroicons-x-mark-20-solid' }"
-            @close="errorMessage = ''"
-          />
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent mb-2">CraftCart</h1>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Create Account</h2>
+        <p class="text-gray-600 dark:text-gray-400">Join our artisan marketplace today</p>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <form @submit.prevent="onSubmit" class="space-y-6">
+          <!-- Error Message -->
+          <div v-if="errorMessage" class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg text-sm">
+            {{ errorMessage }}
+          </div>
 
           <!-- User Type Selection -->
-          <UFormGroup label="I am a" name="userType" required>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div
-                v-for="option in userTypeOptions"
-                :key="option.value"
-                @click="state.userType = option.value as 'seller' | 'customer'"
-                class="border-2 rounded-lg p-4 cursor-pointer transition-all"
-                :class="state.userType === option.value 
-                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
-                  : 'border-gray-200 dark:border-gray-700 hover:border-primary-300'"
-              >
-                <div class="flex items-start">
-                  <URadio
-                    :model-value="state.userType"
-                    :value="option.value"
-                    class="mt-1"
-                  />
-                  <div class="ml-3">
-                    <p class="font-semibold text-gray-900 dark:text-white">{{ option.label }}</p>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ option.description }}</p>
-                  </div>
+          <div class="space-y-3">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">I want to:</label>
+            <div class="space-y-2">
+              <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all" :class="state.userType === 'customer' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'">
+                <input type="radio" v-model="state.userType" value="customer" class="mt-1 text-orange-600 focus:ring-orange-500" />
+                <div class="ml-3">
+                  <div class="font-medium text-gray-900 dark:text-white">Customer</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">I want to buy artisan products</div>
                 </div>
-              </div>
+              </label>
+              
+              <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all" :class="state.userType === 'seller' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'">
+                <input type="radio" v-model="state.userType" value="seller" class="mt-1 text-orange-600 focus:ring-orange-500" />
+                <div class="ml-3">
+                  <div class="font-medium text-gray-900 dark:text-white">Artisan/Seller</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">I want to sell my handicrafts</div>
+                </div>
+              </label>
             </div>
-          </UFormGroup>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UFormGroup label="Full Name" name="name" required>
-              <UInput
-                v-model="state.name"
-                placeholder="John Doe"
-                size="lg"
-                icon="i-heroicons-user"
-              />
-            </UFormGroup>
-
-            <UFormGroup label="Phone Number" name="phone" required>
-              <UInput
-                v-model="state.phone"
-                placeholder="9876543210"
-                size="lg"
-                icon="i-heroicons-phone"
-                maxlength="10"
-              />
-            </UFormGroup>
           </div>
 
-          <UFormGroup label="Email" name="email" required>
-            <UInput
-              v-model="state.email"
-              type="email"
-              placeholder="your.email@example.com"
-              size="lg"
-              icon="i-heroicons-envelope"
+          <!-- Name -->
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+            <input 
+              id="name"
+              v-model="state.name" 
+              type="text" 
+              required
+              placeholder="John Doe"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             />
-          </UFormGroup>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UFormGroup label="Password" name="password" required>
-              <UInput
-                v-model="state.password"
-                type="password"
-                placeholder="Min. 6 characters"
-                size="lg"
-                icon="i-heroicons-lock-closed"
-              />
-            </UFormGroup>
-
-            <UFormGroup label="Confirm Password" name="confirmPassword" required>
-              <UInput
-                v-model="confirmPassword"
-                type="password"
-                placeholder="Re-enter password"
-                size="lg"
-                icon="i-heroicons-lock-closed"
-              />
-            </UFormGroup>
           </div>
 
-          <UButton
-            type="submit"
+          <!-- Phone -->
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
+            <input 
+              id="phone"
+              v-model="state.phone" 
+              type="tel" 
+              required
+              placeholder="9876543210"
+              maxlength="10"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+            <input 
+              id="email"
+              v-model="state.email" 
+              type="email" 
+              required
+              placeholder="your.email@example.com"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+            <input 
+              id="password"
+              v-model="state.password" 
+              type="password" 
+              required
+              minlength="6"
+              placeholder="Min. 6 characters"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Re-enter password</label>
+            <input 
+              id="confirmPassword"
+              v-model="confirmPassword" 
+              type="password" 
+              required
+              placeholder="Re-enter password"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <AppButton 
+            type="submit" 
             color="primary"
             size="lg"
-            block
-            :loading="loading"
+            :disabled="loading"
+            class="w-full"
           >
-            Create Account
-          </UButton>
-        </UForm>
+            {{ loading ? 'Creating Account...' : 'Create Account' }}
+          </AppButton>
 
-        <div class="mt-6 text-center">
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            Already have an account?
-            <NuxtLink to="/auth/login" class="text-primary-600 hover:text-primary-500 font-medium">
+          <!-- Sign In Link -->
+          <div class="text-center text-sm text-gray-600 dark:text-gray-400">
+            Already have an account? 
+            <NuxtLink to="/auth/login" class="text-orange-600 hover:text-orange-700 font-medium">
               Sign in
             </NuxtLink>
-          </p>
-        </div>
-      </UCard>
+          </div>
 
-      <p class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        By creating an account, you agree to CraftCart's Terms of Service and Privacy Policy
-      </p>
+          <!-- Terms -->
+          <div class="text-xs text-center text-gray-500 dark:text-gray-500">
+            By creating an account, you agree to CraftCart's Terms of Service and Privacy Policy
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>

@@ -23,16 +23,28 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Manually populate seller field if it exists (for old data)
+    let sellerData = (product as any).sellerId
+    
+    if (!sellerData && (product as any).seller) {
+      const User = (await import('../../models/User')).User
+      sellerData = await User.findById((product as any).seller).select('name rating location phone email').lean()
+    }
+
     // Transform data
     const transformedProduct = {
-      id: (product as any)._id.toString(),
-      sellerId: (product as any).sellerId._id.toString(),
-      seller: {
-        name: (product as any).sellerId.name,
-        rating: (product as any).sellerId.rating,
-        location: (product as any).sellerId.location,
-        phone: (product as any).sellerId.phone,
-        email: (product as any).sellerId.email,
+      _id: (product as any)._id.toString(),
+      seller: sellerData ? {
+        _id: sellerData._id?.toString() || sellerData.toString(),
+        name: sellerData.name || 'Unknown',
+        rating: sellerData.rating || { average: 0, count: 0 },
+        location: sellerData.location,
+        phone: sellerData.phone,
+        email: sellerData.email,
+      } : {
+        _id: '',
+        name: 'Unknown',
+        rating: { average: 0, count: 0 },
       },
       title: (product as any).title,
       description: (product as any).description,
