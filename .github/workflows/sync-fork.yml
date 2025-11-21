@@ -1,0 +1,22 @@
+name: Sync to Deployment Repository
+
+on:
+  push:
+    branches:
+      - main  # Change to 'master' if that's your default branch
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for proper syncing
+
+      - name: Push to deployment repository
+        env:
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          git remote add deployment https://x-access-token:${SYNC_TOKEN}@github.com/AliRehman7065/craftcart-website.git
+          git push deployment main:main --force
