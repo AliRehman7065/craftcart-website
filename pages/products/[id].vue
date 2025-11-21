@@ -162,6 +162,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Auth Modal -->
+    <AuthModal
+      :is-open="showAuthModal"
+      title="Sign In Required"
+      message="Please sign in or create an account to add items to your cart."
+      @close="showAuthModal = false"
+    />
   </div>
 </template>
 
@@ -182,6 +190,7 @@ const product = ref<any>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
 const currentImageIndex = ref(0)
+const showAuthModal = ref(false)
 
 const loadProduct = async () => {
   loading.value = true
@@ -206,7 +215,7 @@ const loadProduct = async () => {
 
 const addToCart = () => {
   if (!authStore.isAuthenticated) {
-    router.push('/auth/login')
+    showAuthModal.value = true
     return
   }
   
@@ -227,7 +236,7 @@ const addToCart = () => {
 
 const contactSeller = () => {
   if (!authStore.isAuthenticated) {
-    router.push('/auth/login')
+    showAuthModal.value = true
     return
   }
   

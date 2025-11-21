@@ -137,10 +137,6 @@ import { useCartStore } from '~/stores/cartStore'
 import { useAuthStore } from '~/stores/authStore'
 import { useToastStore } from '~/stores/toastStore'
 
-definePageMeta({
-  middleware: 'auth',
-})
-
 const router = useRouter()
 const cartStore = useCartStore()
 const authStore = useAuthStore()
