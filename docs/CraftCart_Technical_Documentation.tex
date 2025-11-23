@@ -1,0 +1,1352 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{booktabs}
+
+% Code listing settings
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    tabsize=2,
+    showstringspaces=false
+}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{CraftCart Technical Documentation}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{Empowering Indian Artisans Through Technology}
+
+% Title formatting
+\titleformat{\section}
+{\normalfont\Large\bfseries\color{blue!70!black}}{\thesection}{1em}{}
+
+\titleformat{\subsection}
+{\normalfont\large\bfseries\color{blue!50!black}}{\thesubsection}{1em}{}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={CraftCart Technical Documentation},
+    pdfauthor={CraftCart Development Team},
+}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Huge\bfseries CraftCart}\\[0.5cm]
+    {\Large Artisan Marketplace Platform}\\[1.5cm]
+    
+    {\LARGE\bfseries Technical Documentation}\\[0.5cm]
+    {\large Complete Architecture, Deployment \& Development Guide}\\[3cm]
+    
+    \begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=Project Overview]
+        \textbf{Framework:} Nuxt 4 (Vue 3)\\
+        \textbf{Backend:} Node.js with Nitro Server\\
+        \textbf{Database:} MongoDB with Mongoose ODM\\
+        \textbf{Deployment:} Vercel\\
+        \textbf{Repository:} \url{https://github.com/Black-Lights/craftcart-website}
+    \end{tcolorbox}
+    
+    \vfill
+    
+    {\large Last Updated: November 23, 2025}\\[0.3cm]
+    {\large Version 1.0}
+    
+\end{titlepage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+%-----------------------------------------------------------
+% SECTION 1: INTRODUCTION
+%-----------------------------------------------------------
+\section{Introduction}
+
+\subsection{Project Overview}
+CraftCart is a full-stack marketplace platform designed to connect skilled Indian artisans with customers across India. The platform empowers traditional craftspeople to showcase and sell their handcrafted products while supporting UN SDG 8 (Decent Work and Economic Growth).
+
+\subsection{Key Features}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Dual Authentication System:} Separate seller and customer roles with JWT-based security
+    \item \textbf{Product Management:} Full CRUD operations with 8 distinct categories
+    \item \textbf{Shopping Experience:} Cart management, checkout, and order tracking
+    \item \textbf{Seller Dashboard:} Real-time analytics, inventory, and order management
+    \item \textbf{Responsive Design:} Mobile-first UI using Tailwind CSS
+    \item \textbf{58+ Seeded Products:} Pre-populated catalog for demonstration
+\end{itemize}
+
+\subsection{Target Audience}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Sellers:} Indian artisans and craftspeople
+    \item \textbf{Customers:} Individuals seeking authentic handcrafted products
+    \item \textbf{Categories:} Handicrafts, Textiles, Pottery, Jewelry, Home Decor, Paintings, Woodwork, Metalwork
+\end{itemize}
+
+%-----------------------------------------------------------
+% SECTION 2: TECHNOLOGY STACK
+%-----------------------------------------------------------
+\section{Technology Stack}
+
+\subsection{Frontend Technologies}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Technology} & \textbf{Version} & \textbf{Purpose} \\ \midrule
+Vue.js & 3.5.24 & Progressive JavaScript framework \\
+Nuxt & 4.2.1 & Full-stack framework for Vue \\
+TypeScript & 5.9.3 & Type-safe development \\
+Pinia & 0.11.3 & State management \\
+Tailwind CSS & 3.4.15 & Utility-first CSS framework \\
+Nuxt UI & 4.2.0 & Pre-built UI components \\
+Vue Router & 4.6.3 & Client-side routing \\ \bottomrule
+\end{tabular}
+\caption{Frontend Technology Stack}
+\end{table}
+
+\subsection{Backend Technologies}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Technology} & \textbf{Version} & \textbf{Purpose} \\ \midrule
+Node.js & 20+ & Server runtime environment \\
+Nitro & (via Nuxt) & Server engine \\
+MongoDB & 5.0+ & NoSQL database \\
+Mongoose & 8.20.0 & MongoDB object modeling \\
+JWT & 9.0.2 & Authentication tokens \\
+bcryptjs & 3.0.3 & Password hashing \\
+Firebase & 12.6.0 & Cloud storage (planned) \\ \bottomrule
+\end{tabular}
+\caption{Backend Technology Stack}
+\end{table}
+
+\subsection{Development Tools}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Package Manager:} npm
+    \item \textbf{Version Control:} Git \& GitHub
+    \item \textbf{Code Editor:} Visual Studio Code
+    \item \textbf{Deployment Platform:} Vercel
+    \item \textbf{Database Hosting:} MongoDB Atlas
+    \item \textbf{CI/CD:} GitHub Actions (sync workflow)
+\end{itemize}
+
+%-----------------------------------------------------------
+% SECTION 3: ARCHITECTURE
+%-----------------------------------------------------------
+\section{System Architecture}
+
+\subsection{Application Architecture}
+
+CraftCart follows a modern full-stack architecture pattern:
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=Architecture Layers]
+\textbf{1. Presentation Layer (Client)}
+\begin{itemize}[leftmargin=*]
+    \item Vue 3 components with Composition API
+    \item Pinia stores for state management
+    \item Tailwind CSS for styling
+    \item Client-side routing with Vue Router
+\end{itemize}
+
+\textbf{2. Application Layer (Server)}
+\begin{itemize}[leftmargin=*]
+    \item Nitro server engine
+    \item API routes (/api/*)
+    \item Server middleware for authentication
+    \item SSR (Server-Side Rendering) capabilities
+\end{itemize}
+
+\textbf{3. Data Layer}
+\begin{itemize}[leftmargin=*]
+    \item MongoDB database
+    \item Mongoose schemas and models
+    \item Database connection pooling
+\end{itemize}
+\end{tcolorbox}
+
+\subsection{Project Structure}
+
+\begin{lstlisting}[language=bash, caption=CraftCart Directory Structure]
+CraftCart_Website/
+|-- .github/
+|   `-- workflows/
+|       `-- sync-fork.yml         # GitHub Actions sync workflow
+|-- assets/
+|   `-- css/
+|       `-- main.css             # Global styles
+|-- components/
+|   |-- AppButton.vue            # Reusable button component
+|   |-- AppCard.vue              # Card wrapper component
+|   |-- AuthModal.vue            # Authentication modal
+|   |-- ProductCard.vue          # Product display card
+|   `-- ToastNotification.vue   # Toast notification system
+|-- layouts/
+|   |-- auth.vue                 # Authentication pages layout
+|   `-- default.vue              # Main application layout
+|-- middleware/
+|   `-- auth.ts                  # Client-side auth middleware
+|-- pages/
+|   |-- index.vue                # Home page
+|   |-- about.vue                # About page
+|   |-- cart.vue                 # Shopping cart
+|   |-- checkout.vue             # Checkout page
+|   |-- contact.vue              # Contact page
+|   |-- faq.vue                  # FAQ page
+|   |-- privacy.vue              # Privacy policy
+|   |-- terms.vue                # Terms and conditions
+|   |-- auth/
+|   |   |-- login.vue            # Login page
+|   |   `-- register.vue         # Registration page
+|   |-- customer/
+|   |   `-- orders.vue           # Customer order history
+|   |-- products/
+|   |   |-- index.vue            # Product listing
+|   |   |-- [id].vue             # Product details
+|   |   |-- create.vue           # Create product (seller)
+|   |   `-- edit/
+|   |       `-- [id].vue         # Edit product (seller)
+|   |-- seller/
+|   |   |-- dashboard.vue        # Seller dashboard
+|   |   |-- products.vue         # Seller product management
+|   |   |-- orders.vue           # Seller order management
+|   |   `-- help.vue             # Seller help center
+|   `-- order-success/
+|       `-- [id].vue             # Order confirmation
+|-- plugins/
+|   `-- auth.client.ts           # Client-side auth plugin
+|-- public/
+|   `-- robots.txt               # SEO configuration
+|-- scripts/
+|   |-- seed-products.mjs        # Database seeding script
+|   |-- seed-more-products.mjs   # Additional products seeding
+|   |-- remove-duplicates.mjs    # Duplicate removal utility
+|   `-- fix-categories.mjs       # Category cleanup script
+|-- server/
+|   |-- api/
+|   |   |-- auth/
+|   |   |   |-- login.post.ts    # Login endpoint
+|   |   |   |-- logout.post.ts   # Logout endpoint
+|   |   |   |-- me.get.ts        # Get current user
+|   |   |   `-- register.post.ts # Registration endpoint
+|   |   |-- orders/
+|   |   |   |-- create.post.ts   # Create order
+|   |   |   |-- my-orders.get.ts # Get user orders
+|   |   |   |-- [id]/
+|   |   |   |   `-- status.patch.ts  # Update order status
+|   |   |   `-- seller/
+|   |   |       `-- my-orders.get.ts # Get seller orders
+|   |   `-- products/
+|   |       |-- index.get.ts     # List products
+|   |       |-- create.post.ts   # Create product
+|   |       |-- [id].get.ts      # Get product
+|   |       |-- [id].put.ts      # Update product
+|   |       |-- [id].patch.ts    # Partial update
+|   |       |-- [id].delete.ts   # Delete product
+|   |       `-- seller/
+|   |           `-- my-products.get.ts  # Get seller products
+|   |-- middleware/
+|   |   `-- auth.ts              # Server-side auth middleware
+|   |-- models/
+|   |   |-- User.ts              # User schema
+|   |   |-- Product.ts           # Product schema
+|   |   `-- Order.ts             # Order schema
+|   `-- plugins/
+|       `-- mongoose.ts          # MongoDB connection
+|-- stores/
+|   |-- authStore.ts             # Authentication state
+|   |-- cartStore.ts             # Shopping cart state
+|   |-- productStore.ts          # Product state
+|   `-- toastStore.ts            # Notification state
+|-- types/
+|   |-- user.ts                  # User TypeScript types
+|   |-- product.ts               # Product TypeScript types
+|   |-- order.ts                 # Order TypeScript types
+|   `-- api.ts                   # API response types
+|-- .env                         # Environment variables (gitignored)
+|-- .env.example                 # Environment template
+|-- .gitignore                   # Git ignore rules
+|-- app.config.ts                # App configuration
+|-- app.vue                      # Root Vue component
+|-- nuxt.config.ts               # Nuxt configuration
+|-- package.json                 # Dependencies
+|-- tsconfig.json                # TypeScript configuration
+|-- README.md                    # Project documentation
+|-- MVP-Implementation.md        # Implementation guide
+`-- SETUP_COMPLETE.md            # Setup instructions
+\end{lstlisting}
+
+%-----------------------------------------------------------
+% SECTION 4: FRONTEND ARCHITECTURE
+%-----------------------------------------------------------
+\section{Frontend Architecture}
+
+\subsection{Vue 3 with Composition API}
+
+CraftCart utilizes Vue 3's Composition API for all components, providing:
+\begin{itemize}[leftmargin=*]
+    \item Better TypeScript integration
+    \item Improved code organization
+    \item Enhanced reusability through composables
+    \item Better performance with reactivity system
+\end{itemize}
+
+\subsection{Nuxt 4 Framework}
+
+Nuxt 4 provides the foundation with:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{File-based Routing:} Automatic route generation from pages/ directory
+    \item \textbf{Auto-imports:} Components, composables, and utilities
+    \item \textbf{Layouts System:} Reusable page layouts (default, auth)
+    \item \textbf{SSR Support:} Server-Side Rendering for better SEO
+    \item \textbf{API Routes:} server/api/ directory for backend endpoints
+    \item \textbf{Middleware:} Client and server-side route guards
+\end{itemize}
+
+\subsection{State Management with Pinia}
+
+Four main stores manage application state:
+
+\begin{lstlisting}[language=JavaScript, caption=Auth Store Example]
+// stores/authStore.ts
+import { defineStore } from 'pinia'
+
+export const useAuthStore = defineStore('auth', () => {
+  // State
+  const user = ref<User | null>(null)
+  const loading = ref<boolean>(false)
+  const error = ref<string | null>(null)
+
+  // Getters
+  const isAuthenticated = computed(() => !!user.value)
+  const isSeller = computed(() => user.value?.userType === 'seller')
+  const isCustomer = computed(() => user.value?.userType === 'customer')
+
+  // Actions
+  const login = async (credentials: UserLogin) => {
+    loading.value = true
+    const response = await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: credentials,
+    })
+    user.value = response.data.user
+    loading.value = false
+  }
+
+  return { user, loading, error, isAuthenticated, 
+           isSeller, isCustomer, login }
+})
+\end{lstlisting}
+
+\textbf{Store Responsibilities:}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{authStore:} User authentication and session management
+    \item \textbf{cartStore:} Shopping cart items and calculations
+    \item \textbf{productStore:} Product listing, filtering, pagination
+    \item \textbf{toastStore:} Global notification system
+\end{itemize}
+
+\subsection{UI Components}
+
+\subsubsection{Nuxt UI Integration}
+Pre-built components from Nuxt UI:
+\begin{itemize}[leftmargin=*]
+    \item UButton, UInput, UForm
+    \item UCard, UBadge, UAvatar
+    \item UModal, UDropdown, UPagination
+    \item Built on Tailwind CSS
+\end{itemize}
+
+\subsubsection{Custom Components}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{ProductCard:} Displays product with image, price, seller info
+    \item \textbf{AppButton:} Reusable button with loading states
+    \item \textbf{ToastNotification:} Success/error message display
+    \item \textbf{AuthModal:} Login/register modal dialog
+\end{enumerate}
+
+%-----------------------------------------------------------
+% SECTION 5: BACKEND ARCHITECTURE
+%-----------------------------------------------------------
+\section{Backend Architecture}
+
+\subsection{Nitro Server Engine}
+
+Nuxt 4's Nitro server provides:
+\begin{itemize}[leftmargin=*]
+    \item Fast, lightweight server runtime
+    \item API route handling
+    \item Server middleware support
+    \item Edge deployment compatibility
+    \item Built-in caching capabilities
+\end{itemize}
+
+\subsection{API Routes Structure}
+
+All API endpoints follow RESTful conventions:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Endpoint} & \textbf{Method} & \textbf{Description} \\ \midrule
+/api/auth/register & POST & Register new user \\
+/api/auth/login & POST & Authenticate user \\
+/api/auth/logout & POST & Clear session \\
+/api/auth/me & GET & Get current user \\
+\midrule
+/api/products & GET & List products with filters \\
+/api/products/create & POST & Create new product \\
+/api/products/[id] & GET & Get product details \\
+/api/products/[id] & PUT & Update product \\
+/api/products/[id] & DELETE & Delete product \\
+/api/products/seller/my-products & GET & Get seller's products \\
+\midrule
+/api/orders/create & POST & Create new order \\
+/api/orders/my-orders & GET & Get customer orders \\
+/api/orders/seller/my-orders & GET & Get seller orders \\
+/api/orders/[id]/status & PATCH & Update order status \\ \bottomrule
+\end{tabular}
+\caption{API Endpoints Overview}
+\end{table}
+
+\subsection{Database Models}
+
+\subsubsection{User Model}
+\begin{lstlisting}[language=JavaScript, caption=User Schema]
+// server/models/User.ts
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  phone: { type: String, required: true },
+  password: { type: String, required: true, select: false },
+  userType: { 
+    type: String, 
+    enum: ['seller', 'customer'], 
+    required: true 
+  },
+  profileImage: String,
+  isVerified: { type: Boolean, default: false },
+  location: {
+    city: String,
+    state: String,
+  },
+  rating: {
+    average: { type: Number, default: 0 },
+    count: { type: Number, default: 0 },
+  },
+}, { timestamps: true })
+\end{lstlisting}
+
+\subsubsection{Product Model}
+\begin{lstlisting}[language=JavaScript, caption=Product Schema]
+// server/models/Product.ts
+const productSchema = new mongoose.Schema({
+  sellerId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
+  },
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  price: { type: Number, required: true },
+  category: {
+    type: String,
+    enum: ['Handicrafts', 'Textiles', 'Pottery', 
+           'Jewelry', 'Home Decor', 'Paintings', 
+           'Woodwork', 'Metalwork'],
+    required: true,
+  },
+  images: [{ type: String, required: true }],
+  stock: { type: Number, default: 1 },
+  location: {
+    city: String,
+    state: String,
+  },
+  isActive: { type: Boolean, default: true },
+}, { timestamps: true })
+\end{lstlisting}
+
+\subsubsection{Order Model}
+\begin{lstlisting}[language=JavaScript, caption=Order Schema]
+// server/models/Order.ts
+const orderSchema = new mongoose.Schema({
+  orderNumber: { type: String, unique: true, required: true },
+  customerId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
+  },
+  sellerId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
+  },
+  productId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Product', 
+    required: true 
+  },
+  quantity: { type: Number, required: true },
+  totalAmount: { type: Number, required: true },
+  deliveryAddress: {
+    street: String,
+    city: String,
+    state: String,
+    pincode: String,
+    phone: String,
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed', 'shipped', 
+           'delivered', 'cancelled'],
+    default: 'pending',
+  },
+}, { timestamps: true })
+\end{lstlisting}
+
+\subsection{Authentication System}
+
+\subsubsection{JWT Implementation}
+\begin{enumerate}[leftmargin=*]
+    \item User submits credentials via POST /api/auth/login
+    \item Server validates credentials against database
+    \item bcryptjs compares hashed passwords
+    \item JWT token generated with user ID and role
+    \item Token stored in httpOnly cookie (XSS protection)
+    \item Cookie expires in 7 days
+    \item Subsequent requests include cookie automatically
+\end{enumerate}
+
+\subsubsection{Password Security}
+\begin{lstlisting}[language=JavaScript, caption=Password Hashing]
+// Pre-save hook in User model
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next()
+  this.password = await bcrypt.hash(this.password, 12)
+  next()
+})
+
+// Password comparison method
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password)
+}
+\end{lstlisting}
+
+\subsection{Database Connection}
+
+MongoDB connection is established via Nitro plugin:
+
+\begin{lstlisting}[language=JavaScript, caption=MongoDB Plugin]
+// server/plugins/mongoose.ts
+export default defineNitroPlugin(async () => {
+  const config = useRuntimeConfig()
+  
+  if (!config.mongodbUri) {
+    console.error('MONGODB_URI not set!')
+    return
+  }
+
+  const options = {
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+    maxPoolSize: 10,
+  }
+
+  await mongoose.connect(config.mongodbUri, options)
+  console.log('MongoDB connected successfully')
+})
+\end{lstlisting}
+
+%-----------------------------------------------------------
+% SECTION 6: KEY FEATURES IMPLEMENTATION
+%-----------------------------------------------------------
+\section{Key Features Implementation}
+
+\subsection{Authentication Flow}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=Registration Process]
+\textbf{Client Side:}
+\begin{enumerate}[leftmargin=*]
+    \item User fills registration form (pages/auth/register.vue)
+    \item Form data validated client-side
+    \item authStore.register() called
+    \item POST request to /api/auth/register
+\end{enumerate}
+
+\textbf{Server Side:}
+\begin{enumerate}[leftmargin=*]
+    \item Validate request body
+    \item Check if email already exists
+    \item Hash password with bcrypt
+    \item Create user in database
+    \item Generate JWT token
+    \item Set httpOnly cookie
+    \item Return user data (without password)
+\end{enumerate}
+
+\textbf{Post-Registration:}
+\begin{enumerate}[leftmargin=*]
+    \item Update authStore state
+    \item Redirect to home page
+    \item Display welcome toast notification
+\end{enumerate}
+\end{tcolorbox}
+
+\subsection{Product Listing \& Filtering}
+
+\subsubsection{Query Parameters}
+Products can be filtered using:
+\begin{itemize}[leftmargin=*]
+    \item \texttt{category}: Filter by product category
+    \item \texttt{minPrice}, \texttt{maxPrice}: Price range
+    \item \texttt{search}: Text search in title/description
+    \item \texttt{sortBy}: Field to sort by (price, createdAt, etc.)
+    \item \texttt{sortOrder}: asc or desc
+    \item \texttt{page}, \texttt{limit}: Pagination
+\end{itemize}
+
+\subsubsection{Implementation}
+\begin{lstlisting}[language=JavaScript, caption=Product Filtering API]
+// server/api/products/index.get.ts
+export default defineEventHandler(async (event) => {
+  const query = getQuery(event)
+  const filter = { isActive: true }
+
+  // Category filter
+  if (query.category && query.category !== 'all') {
+    filter.category = query.category
+  }
+
+  // Price range filter
+  if (query.minPrice || query.maxPrice) {
+    filter.price = {}
+    if (query.minPrice) filter.price.$gte = Number(query.minPrice)
+    if (query.maxPrice) filter.price.$lte = Number(query.maxPrice)
+  }
+
+  // Text search
+  if (query.search) {
+    filter.$or = [
+      { title: { $regex: query.search, $options: 'i' } },
+      { description: { $regex: query.search, $options: 'i' } },
+    ]
+  }
+
+  const products = await Product.find(filter)
+    .populate('sellerId', 'name rating')
+    .sort({ [query.sortBy]: query.sortOrder === 'desc' ? -1 : 1 })
+    .skip((query.page - 1) * query.limit)
+    .limit(Number(query.limit))
+
+  return { success: true, data: products }
+})
+\end{lstlisting}
+
+\subsection{Shopping Cart}
+
+Cart is managed client-side with localStorage persistence:
+
+\begin{lstlisting}[language=JavaScript, caption=Cart Store]
+// stores/cartStore.ts
+export const useCartStore = defineStore('cart', {
+  state: () => ({
+    items: [] as CartItem[],
+  }),
+
+  getters: {
+    cartCount: (state) => 
+      state.items.reduce((total, item) => total + item.quantity, 0),
+    
+    cartTotal: (state) => 
+      state.items.reduce((total, item) => 
+        total + (item.price * item.quantity), 0),
+  },
+
+  actions: {
+    addToCart(product) {
+      const existingItem = this.items.find(
+        item => item.productId === product.id
+      )
+      
+      if (existingItem) {
+        existingItem.quantity++
+      } else {
+        this.items.push({
+          productId: product.id,
+          title: product.title,
+          price: product.price,
+          quantity: 1,
+          // ... other fields
+        })
+      }
+      
+      this.saveToLocalStorage()
+    },
+    
+    saveToLocalStorage() {
+      localStorage.setItem('cart', JSON.stringify(this.items))
+    },
+  },
+
+  // Persist to localStorage
+  persist: true,
+})
+\end{lstlisting}
+
+\subsection{Order Management}
+
+\subsubsection{Order Creation}
+\begin{enumerate}[leftmargin=*]
+    \item User clicks "Checkout" in cart
+    \item Enters delivery address
+    \item System generates unique order number: ORD-timestamp-random
+    \item Creates order documents (one per seller)
+    \item Reduces product stock
+    \item Clears cart
+    \item Shows order confirmation
+\end{enumerate}
+
+\subsubsection{Order Status Workflow}
+\begin{center}
+\begin{tikzpicture}[node distance=2cm, auto]
+    % This would require tikz package
+    % Simplified representation in text:
+\end{center}
+
+\textbf{Order Lifecycle:}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Pending:} Order created, awaiting seller confirmation
+    \item \textbf{Confirmed:} Seller confirms order
+    \item \textbf{Shipped:} Order dispatched for delivery
+    \item \textbf{Delivered:} Order completed successfully
+    \item \textbf{Cancelled:} Order cancelled (stock restored)
+\end{enumerate}
+
+\subsection{Seller Dashboard}
+
+Analytics displayed on seller dashboard:
+\begin{itemize}[leftmargin=*]
+    \item Total Orders
+    \item Total Revenue (excluding cancelled)
+    \item Active Products
+    \item Order Completion Rate
+    \item Recent Orders
+    \item Top Selling Products
+    \item Order Status Distribution
+\end{itemize}
+
+\begin{lstlisting}[language=JavaScript, caption=Dashboard Analytics]
+// Calculated in seller/dashboard.vue
+const analytics = computed(() => {
+  const totalOrders = orders.value.length
+  const totalRevenue = orders.value
+    .filter(o => o.status !== 'cancelled')
+    .reduce((sum, o) => sum + o.totalAmount, 0)
+  
+  const completedOrders = orders.value
+    .filter(o => o.status === 'delivered').length
+  
+  const completionRate = totalOrders > 0
+    ? (completedOrders / totalOrders * 100).toFixed(1)
+    : 0
+
+  return { totalOrders, totalRevenue, completionRate }
+})
+\end{lstlisting}
+
+%-----------------------------------------------------------
+% SECTION 7: DEPLOYMENT
+%-----------------------------------------------------------
+\section{Deployment on Vercel}
+
+\subsection{Why Vercel?}
+
+Vercel is ideal for Nuxt applications:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Zero Configuration:} Automatic Nuxt detection
+    \item \textbf{Edge Network:} Global CDN for fast delivery
+    \item \textbf{Serverless Functions:} API routes as serverless functions
+    \item \textbf{Environment Variables:} Secure configuration management
+    \item \textbf{Automatic Deployments:} GitHub integration
+    \item \textbf{Free Tier:} Generous free plan for personal projects
+\end{itemize}
+
+\subsection{Deployment Configuration}
+
+Nuxt 4 is automatically configured for Vercel deployment. No additional configuration file needed.
+
+\subsection{Deployment Steps}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Push to GitHub}
+    \begin{lstlisting}[language=bash]
+git add .
+git commit -m "Ready for deployment"
+git push origin main
+    \end{lstlisting}
+
+    \item \textbf{Connect to Vercel}
+    \begin{itemize}
+        \item Visit \url{https://vercel.com}
+        \item Sign in with GitHub
+        \item Click "New Project"
+        \item Import repository: Black-Lights/craftcart-website
+    \end{itemize}
+
+    \item \textbf{Configure Environment Variables}
+    
+    In Vercel Project Settings $\rightarrow$ Environment Variables, add:
+    \begin{itemize}
+        \item \texttt{MONGODB\_URI}: Your MongoDB Atlas connection string
+        \item \texttt{JWT\_SECRET}: Strong random secret key
+        \item \texttt{RAZORPAY\_KEY\_ID}: Payment gateway key (if using)
+        \item \texttt{RAZORPAY\_KEY\_SECRET}: Payment gateway secret
+        \item \texttt{FIREBASE\_*}: Firebase configuration (if using)
+    \end{itemize}
+
+    \item \textbf{Deploy}
+    \begin{itemize}
+        \item Click "Deploy"
+        \item Vercel automatically builds and deploys
+        \item Deployment completes in 2-3 minutes
+        \item Accessible at: \texttt{https://craftcart-website.vercel.app}
+    \end{itemize}
+
+    \item \textbf{Automatic Updates}
+    \begin{itemize}
+        \item Every push to main branch triggers deployment
+        \item Pull requests create preview deployments
+        \item Roll back to any previous deployment
+    \end{itemize}
+\end{enumerate}
+
+\subsection{MongoDB Atlas Configuration}
+
+For Vercel deployment, MongoDB Atlas must allow connections:
+
+\begin{enumerate}[leftmargin=*]
+    \item Login to MongoDB Atlas
+    \item Navigate to Network Access
+    \item Click "Add IP Address"
+    \item Select "Allow Access from Anywhere" (0.0.0.0/0)
+    \item This allows Vercel's serverless functions to connect
+\end{enumerate}
+
+\textbf{Security Note:} Use strong database passwords and enable authentication.
+
+\subsection{GitHub Actions Sync Workflow}
+
+Repository includes automatic sync to deployment fork:
+
+\begin{lstlisting}[language=yaml, caption=.github/workflows/sync-fork.yml]
+name: Sync to Deployment Repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Push to deployment repository
+        env:
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          git remote add deployment \
+            https://x-access-token:${SYNC_TOKEN}@github.com/\
+            AliRehman7065/craftcart-website.git
+          git push deployment main:main --force
+\end{lstlisting}
+
+%-----------------------------------------------------------
+% SECTION 8: DEVELOPMENT WORKFLOW
+%-----------------------------------------------------------
+\section{Development Workflow}
+
+\subsection{Local Development Setup}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Clone Repository}
+    \begin{lstlisting}[language=bash]
+git clone https://github.com/Black-Lights/craftcart-website.git
+cd craftcart-website
+    \end{lstlisting}
+
+    \item \textbf{Install Dependencies}
+    \begin{lstlisting}[language=bash]
+npm install
+    \end{lstlisting}
+
+    \item \textbf{Configure Environment}
+    
+    Create \texttt{.env} file:
+    \begin{lstlisting}[language=bash]
+MONGODB_URI=mongodb://localhost:27017/craftcart
+JWT_SECRET=your-secret-key-change-in-production
+    \end{lstlisting}
+
+    \item \textbf{Start Development Server}
+    \begin{lstlisting}[language=bash]
+npm run dev
+# Server runs at http://localhost:3000
+    \end{lstlisting}
+
+    \item \textbf{Seed Database (Optional)}
+    \begin{lstlisting}[language=bash]
+node scripts/seed-products.mjs
+node scripts/seed-more-products.mjs
+    \end{lstlisting}
+\end{enumerate}
+
+\subsection{Development Commands}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Command} & \textbf{Purpose} \\ \midrule
+\texttt{npm run dev} & Start development server \\
+\texttt{npm run build} & Build for production \\
+\texttt{npm run generate} & Generate static site \\
+\texttt{npm run preview} & Preview production build \\
+\texttt{npm run postinstall} & Prepare Nuxt \\ \bottomrule
+\end{tabular}
+\caption{Available NPM Commands}
+\end{table}
+
+\subsection{Git Workflow}
+
+\begin{enumerate}[leftmargin=*]
+    \item Create feature branch
+    \begin{lstlisting}[language=bash]
+git checkout -b feature/new-feature
+    \end{lstlisting}
+
+    \item Make changes and commit
+    \begin{lstlisting}[language=bash]
+git add .
+git commit -m "feat: add new feature"
+    \end{lstlisting}
+
+    \item Push to GitHub
+    \begin{lstlisting}[language=bash]
+git push origin feature/new-feature
+    \end{lstlisting}
+
+    \item Create Pull Request on GitHub
+    
+    \item Merge to main (triggers deployment)
+\end{enumerate}
+
+\subsection{Code Organization Best Practices}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Components:} Reusable UI elements in components/
+    \item \textbf{Pages:} Route-based components in pages/
+    \item \textbf{Stores:} State management in stores/
+    \item \textbf{Types:} TypeScript definitions in types/
+    \item \textbf{API Routes:} Server endpoints in server/api/
+    \item \textbf{Models:} Database schemas in server/models/
+    \item \textbf{Utilities:} Helper functions in utils/ (auto-imported)
+\end{itemize}
+
+%-----------------------------------------------------------
+% SECTION 9: SECURITY
+%-----------------------------------------------------------
+\section{Security Measures}
+
+\subsection{Authentication Security}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Password Hashing:} bcrypt with 12 salt rounds
+    \item \textbf{JWT Tokens:} Signed with secret key
+    \item \textbf{httpOnly Cookies:} Prevents XSS attacks
+    \item \textbf{SameSite Cookie:} CSRF protection
+    \item \textbf{Token Expiration:} 7-day validity
+    \item \textbf{Selective Field Retrieval:} Password excluded from queries
+\end{itemize}
+
+\subsection{Environment Variables}
+
+Sensitive data stored in environment variables:
+\begin{itemize}[leftmargin=*]
+    \item Database connection strings
+    \item JWT secret keys
+    \item Payment gateway credentials
+    \item Firebase service accounts
+\end{itemize}
+
+\textbf{Never commit .env file to version control!}
+
+\subsection{Input Validation}
+
+\subsubsection{Client-Side}
+\begin{itemize}[leftmargin=*]
+    \item Form validation with Nuxt UI
+    \item Type checking with TypeScript
+    \item Required field validation
+    \item Email format validation
+    \item Password strength requirements
+\end{itemize}
+
+\subsubsection{Server-Side}
+\begin{itemize}[leftmargin=*]
+    \item Request body validation
+    \item Type coercion and sanitization
+    \item MongoDB injection prevention (Mongoose)
+    \item Authorization checks
+\end{itemize}
+
+\subsection{Data Protection}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{MongoDB Atlas:} Network access control
+    \item \textbf{Mongoose Schemas:} Field validation and defaults
+    \item \textbf{HTTPS:} Enforced in production (Vercel)
+    \item \textbf{CORS:} Configured for same-origin requests
+\end{enumerate}
+
+%-----------------------------------------------------------
+% SECTION 10: TESTING & DEBUGGING
+%-----------------------------------------------------------
+\section{Testing \& Debugging}
+
+\subsection{Development Tools}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Vue Devtools:} Browser extension for Vue debugging
+    \item \textbf{Nuxt DevTools:} Built-in Nuxt development tools
+    \item \textbf{MongoDB Compass:} GUI for database inspection
+    \item \textbf{Postman/Insomnia:} API endpoint testing
+    \item \textbf{Browser DevTools:} Network, console, and performance debugging
+\end{itemize}
+
+\subsection{Logging}
+
+Server-side logging for debugging:
+
+\begin{lstlisting}[language=JavaScript, caption=Server Logging Example]
+// server/plugins/mongoose.ts
+console.log('MongoDB connected successfully')
+console.log(`Database: ${mongoose.connection.name}`)
+console.log(`Connection state: ${mongoose.connection.readyState}`)
+
+// Error logging
+console.error('MongoDB connection error:', error.message)
+console.error('Error details:', {
+  name: error.name,
+  code: error.code,
+  codeName: error.codeName,
+})
+\end{lstlisting}
+
+\subsection{Common Issues \& Solutions}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{4cm}p{7cm}@{}}
+\toprule
+\textbf{Issue} & \textbf{Solution} \\ \midrule
+MongoDB connection failed & Check MONGODB\_URI in .env, ensure MongoDB is running, verify network access in Atlas \\
+\midrule
+Port 3000 already in use & Use different port: \texttt{PORT=3001 npm run dev} \\
+\midrule
+JWT authentication fails & Verify JWT\_SECRET is set, check cookie settings, clear browser cookies \\
+\midrule
+Module not found errors & Run \texttt{npm install} to reinstall dependencies \\
+\midrule
+Build fails on Vercel & Check environment variables are set, review build logs, verify Node version \\
+\bottomrule
+\end{tabular}
+\caption{Common Issues and Solutions}
+\end{table}
+
+%-----------------------------------------------------------
+% SECTION 11: FUTURE ENHANCEMENTS
+%-----------------------------------------------------------
+\section{Future Enhancements}
+
+\subsection{Phase 2 Features}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Payment Integration}
+    \begin{itemize}
+        \item Razorpay payment gateway
+        \item Multiple payment methods
+        \item Payment verification
+        \item Refund handling
+    \end{itemize}
+
+    \item \textbf{Rating \& Reviews}
+    \begin{itemize}
+        \item Product reviews
+        \item Seller ratings
+        \item Review moderation
+        \item Helpful votes
+    \end{itemize}
+
+    \item \textbf{Real-time Chat}
+    \begin{itemize}
+        \item Buyer-seller messaging
+        \item WebSocket integration
+        \item Message notifications
+        \item Chat history
+    \end{itemize}
+
+    \item \textbf{Email Notifications}
+    \begin{itemize}
+        \item Order confirmations
+        \item Status updates
+        \item Welcome emails
+        \item Password reset
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Phase 3 Features}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Image Upload}
+    \begin{itemize}
+        \item Firebase Storage integration
+        \item Image optimization
+        \item Multi-image upload
+        \item Drag-and-drop interface
+    \end{itemize}
+
+    \item \textbf{Advanced Analytics}
+    \begin{itemize}
+        \item Sales charts
+        \item Traffic analytics
+        \item Revenue trends
+        \item Customer insights
+    \end{itemize}
+
+    \item \textbf{Search Enhancement}
+    \begin{itemize}
+        \item Elasticsearch integration
+        \item Autocomplete
+        \item Advanced filters
+        \item Sort options
+    \end{itemize}
+
+    \item \textbf{Social Features}
+    \begin{itemize}
+        \item Share products
+        \item Follow sellers
+        \item Wishlist
+        \item Product recommendations
+    \end{itemize}
+\end{enumerate}
+
+%-----------------------------------------------------------
+% SECTION 12: PERFORMANCE OPTIMIZATION
+%-----------------------------------------------------------
+\section{Performance Optimization}
+
+\subsection{Current Optimizations}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Server-Side Rendering:} Faster initial page load
+    \item \textbf{Code Splitting:} Automatic by Nuxt/Vite
+    \item \textbf{Image Optimization:} Lazy loading for product images
+    \item \textbf{Database Indexing:} MongoDB indexes on frequently queried fields
+    \item \textbf{Connection Pooling:} MongoDB connection pool (maxPoolSize: 10)
+    \item \textbf{Caching:} Browser caching via Vercel CDN
+\end{itemize}
+
+\subsection{Planned Optimizations}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Redis Caching:} Cache frequently accessed data
+    \item \textbf{Image CDN:} Cloudinary or Firebase Storage
+    \item \textbf{API Rate Limiting:} Prevent abuse
+    \item \textbf{Query Optimization:} MongoDB aggregation pipelines
+    \item \textbf{Lazy Loading:} Component-level lazy loading
+\end{enumerate}
+
+%-----------------------------------------------------------
+% SECTION 13: CONCLUSION
+%-----------------------------------------------------------
+\section{Conclusion}
+
+CraftCart represents a complete, production-ready marketplace platform built with modern web technologies. The combination of Nuxt 4, Vue 3, MongoDB, and Vercel provides:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Developer Experience:} TypeScript, auto-imports, hot reload
+    \item \textbf{User Experience:} Fast, responsive, accessible
+    \item \textbf{Scalability:} Serverless architecture, global CDN
+    \item \textbf{Maintainability:} Clear structure, type safety, documentation
+    \item \textbf{Security:} Industry-standard authentication and encryption
+\end{itemize}
+
+\subsection{Project Statistics}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Metric} & \textbf{Value} \\ \midrule
+Total Files & 100+ \\
+Lines of Code & 5,000+ \\
+Components & 15+ \\
+API Endpoints & 20+ \\
+Database Models & 3 \\
+Seeded Products & 58 \\
+Dependencies & 20+ \\
+Build Time & \textasciitilde2 minutes \\ \bottomrule
+\end{tabular}
+\caption{Project Statistics}
+\end{table}
+
+\subsection{Repository Information}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=GitHub Repository]
+\textbf{Primary Repository:}\\
+\url{https://github.com/Black-Lights/craftcart-website}
+
+\textbf{Deployment Repository:}\\
+\url{https://github.com/AliRehman7065/craftcart-website}
+
+\textbf{Live Demo:}\\
+\url{https://craftcart-website.vercel.app} (if deployed)
+
+\textbf{Documentation:}\\
+See README.md, MVP-Implementation.md, SETUP\_COMPLETE.md
+\end{tcolorbox}
+
+\subsection{Support \& Contributing}
+
+For issues, questions, or contributions:
+\begin{itemize}[leftmargin=*]
+    \item Open an issue on GitHub
+    \item Submit pull requests for improvements
+    \item Follow coding standards and conventions
+    \item Update documentation for new features
+\end{itemize}
+
+\vspace{1cm}
+
+\begin{center}
+\Large\textbf{Built with ❤ for Indian Artisans}
+\end{center}
+
+%-----------------------------------------------------------
+% APPENDICES
+%-----------------------------------------------------------
+\appendix
+
+\section{Environment Variables Reference}
+
+\begin{longtable}{@{}p{4cm}p{7cm}@{}}
+\toprule
+\textbf{Variable} & \textbf{Description} \\ \midrule
+\endhead
+
+MONGODB\_URI & MongoDB connection string \\
+JWT\_SECRET & Secret key for JWT signing \\
+RAZORPAY\_KEY\_ID & Razorpay publishable key \\
+RAZORPAY\_KEY\_SECRET & Razorpay secret key \\
+FIREBASE\_API\_KEY & Firebase API key \\
+FIREBASE\_AUTH\_DOMAIN & Firebase auth domain \\
+FIREBASE\_DATABASE\_URL & Firebase database URL \\
+FIREBASE\_PROJECT\_ID & Firebase project ID \\
+FIREBASE\_STORAGE\_BUCKET & Firebase storage bucket \\
+FIREBASE\_MESSAGING\_SENDER\_ID & Firebase messaging sender ID \\
+FIREBASE\_APP\_ID & Firebase application ID \\
+FIREBASE\_SERVICE\_ACCOUNT & Firebase admin SDK credentials \\ \bottomrule
+\caption{Complete Environment Variables List}
+\end{longtable}
+
+\section{API Response Format}
+
+All API endpoints return consistent JSON responses:
+
+\begin{lstlisting}[language=JavaScript, caption=Success Response]
+{
+  "success": true,
+  "data": {
+    // Actual response data
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=JavaScript, caption=Error Response]
+{
+  "success": false,
+  "statusCode": 400,
+  "message": "Error description"
+}
+\end{lstlisting}
+
+\section{Database Seeding Commands}
+
+\begin{lstlisting}[language=bash, caption=Database Management]
+# Seed initial products
+node scripts/seed-products.mjs
+
+# Seed additional products
+node scripts/seed-more-products.mjs
+
+# Remove duplicate products
+node scripts/remove-duplicates.mjs
+
+# Fix category names
+node scripts/fix-categories.mjs
+\end{lstlisting}
+
+\section{Useful Resources}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Nuxt 3 Documentation:} \url{https://nuxt.com}
+    \item \textbf{Vue 3 Documentation:} \url{https://vuejs.org}
+    \item \textbf{Pinia Documentation:} \url{https://pinia.vuejs.org}
+    \item \textbf{Tailwind CSS:} \url{https://tailwindcss.com}
+    \item \textbf{MongoDB Documentation:} \url{https://www.mongodb.com/docs}
+    \item \textbf{Mongoose Documentation:} \url{https://mongoosejs.com}
+    \item \textbf{Vercel Documentation:} \url{https://vercel.com/docs}
+\end{itemize}
+
+\end{document}
