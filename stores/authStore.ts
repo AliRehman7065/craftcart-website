@@ -81,17 +81,24 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const checkAuth = async (): Promise<boolean> => {
+  const checkAuth = async (retryCount = 0): Promise<boolean> => {
     try {
       const response = await $fetch<ApiResponse<{ user: User }>>('/api/auth/me', {
-        credentials: 'include'
+        credentials: 'include',
+        retry: 2,
+        retryDelay: 500,
       })
       if (response.success && response.data) {
         user.value = response.data.user
         return true
       }
       return false
-    } catch (e) {
+    } catch (e: any) {
+      // Retry once on network errors but not on 401
+      if (retryCount === 0 && e?.statusCode !== 401) {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        return checkAuth(retryCount + 1)
+      }
       console.log('Auth check failed:', e)
       user.value = null
       return false

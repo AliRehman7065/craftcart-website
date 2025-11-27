@@ -13,10 +13,20 @@ export default defineEventHandler(async (event) => {
     }
 
     const config = useRuntimeConfig()
-    const decoded = jwt.verify(token, config.jwtSecret) as any
+    let decoded: any
+    
+    try {
+      decoded = jwt.verify(token, config.jwtSecret)
+    } catch (jwtError) {
+      console.error('JWT verification failed:', jwtError)
+      throw createError({
+        statusCode: 401,
+        message: 'Invalid or expired token',
+      })
+    }
 
-    // Fetch full user data from database
-    const user = await User.findById(decoded.userId).select('-password')
+    // Fetch full user data from database with lean() for better performance
+    const user = await User.findById(decoded.userId).select('-password').lean()
     
     if (!user) {
       throw createError({
@@ -36,13 +46,19 @@ export default defineEventHandler(async (event) => {
           userType: user.userType,
           profileImage: user.profileImage,
           isVerified: user.isVerified,
+          location: user.location,
+          rating: user.rating,
         },
       },
     }
   } catch (error: any) {
+    console.error('Auth check error:', error)
+    if (error.statusCode === 401) {
+      throw error
+    }
     throw createError({
       statusCode: 401,
-      message: 'Invalid or expired token',
+      message: 'Authentication failed',
     })
   }
 })

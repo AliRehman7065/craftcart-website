@@ -26,6 +26,9 @@ export default defineNitroPlugin(async () => {
       serverSelectionTimeoutMS: 10000, // Increased for Vercel
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
+      minPoolSize: 2,
+      maxIdleTimeMS: 30000,
+      compressors: ['zlib'],
     }
 
     await mongoose.connect(config.mongodbUri, options)

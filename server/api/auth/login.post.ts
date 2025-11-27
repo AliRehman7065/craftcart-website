@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Find user with password field (it's excluded by default)
+    // Don't use .lean() because we need the comparePassword method
     const user = await User.findOne({ email }).select('+password')
     
     if (!user) {
